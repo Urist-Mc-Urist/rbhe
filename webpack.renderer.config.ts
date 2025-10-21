@@ -16,4 +16,10 @@ export const rendererConfig: Configuration = {
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
   },
+  entry:[
+    "./src/renderer.ts",
+    "app.jsx",
+    "./src/index.html",
+    "./preload.ts"
+  ]
 };
