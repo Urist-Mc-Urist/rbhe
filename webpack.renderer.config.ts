@@ -18,7 +18,7 @@ export const rendererConfig: Configuration = {
   },
   entry:[
     "./src/renderer.ts",
-    "app.jsx",
+    "app.tsx",
     "./src/index.html",
     "./preload.ts"
   ]
