@@ -29,13 +29,29 @@ export const createConversation = async (config: LLMConfig): Promise<Conversatio
 }
 
 export const writeConversation = async (conversation: Conversation): Promise<void> => {
+    try {
+        await ensureStorageDirectory();
 
-    return
+        const conversationFilePath = join(getConversationStoragePath(), `${conversation.id}.json`);
+        await writeFile(conversationFilePath, JSON.stringify(conversation, null, 2), 'utf8');
+    } catch (error) {
+        console.error(`Failed to write conversation: ${conversation.id}`, error);
+        throw error;
+    }
+
+    
 }
 
 export const readConversation = async (id:string): Promise<Conversation> => {
+    try {
+        await ensureStorageDirectory();
 
-    return
+        const conversationFilePath = join(getConversationStoragePath(), `${id}.json`);
+        return JSON.parse(await readFile(conversationFilePath, {encoding: 'utf8'}));
+    } catch (error) {
+        console.error(`Failed to read conversation ${id}: `, error);
+        throw error;
+    }
 }
 
 export const listConversations = async (): Promise<{id: string; title: string; createdAt: string}[]> => {
@@ -44,21 +60,12 @@ export const listConversations = async (): Promise<{id: string; title: string; c
     return
 }
 
-
-export const ensureStorageDirectory = async(): Promise<boolean> => {
+export const ensureStorageDirectory = async(): Promise<void> => {
     const storagePath = getConversationStoragePath();
     try {
-        // Check if the directory exists (throws if not)
         await access(storagePath);
-        return true; // Directory exists—do nothing
-    } catch (error) {
-        const err = error as NodeJS.ErrnoException;
-        if (err.code === 'ENOENT') { // "No such file or directory" = directory missing
-            // Create the directory (recursive: true handles missing parent dirs, though userData should exist)
-            await mkdir(storagePath, { recursive: true });
-            return true; // Directory created successfully
-        }
-        // Rethrow other errors (e.g., permission denied) so the caller can handle them
-        throw new Error(`Failed to access storage directory: ${err.message}`);
+    } catch {
+        console.error("StoragePath couldn't be accessed")
+        await mkdir(storagePath, {recursive: true})
     }
-};
+}

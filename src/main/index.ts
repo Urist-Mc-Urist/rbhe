@@ -33,11 +33,11 @@ const handleGreeting = (event: Electron.IpcMainInvokeEvent, name: string) => {
   return `Hello ${name}`
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   ipcMain.handle('get-greeting', handleGreeting)
   createWindow();
 
-  runTests();
+  await runTests();
 
 })
 
