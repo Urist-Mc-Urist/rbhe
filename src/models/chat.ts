@@ -7,6 +7,12 @@ export interface Session {
     settings: LLMConfig
 }
 
+export interface SessionInfo {
+    id: string,
+    createdAt: string,
+    updatedAt: string
+}
+
 export interface Conversation {
     id: string;
     title: string;

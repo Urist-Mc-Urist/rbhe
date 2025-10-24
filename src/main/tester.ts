@@ -1,6 +1,6 @@
-import { createSession, createConversation, writeConversation, readConversation, listConversations, readSession } from "./modules/storage/ioHandler";
-import { Conversation, LLMConfig } from "../models/chat";
-import { getChatStream, updateChatWithAsstResponse } from "./modules/llm/llmhandler";
+import { createSession, writeConversation, readConversation } from "./modules/storage/sessionHandler";
+import { Conversation } from "../models/chat";
+import { getChatStream, updateChatWithAsstResponse } from './modules/llm/llmHandler'
 
 export const runTests = async (): Promise<void> => {
     console.log("Starting tests");
@@ -51,7 +51,7 @@ export const runTests = async (): Promise<void> => {
     const stream = await getChatStream(session.id, testWriteConversation.id);
     console.log();
     for await (const partial of stream) {
-        process.stdout.write(partial);
+        process.stdout.write(`${partial}\r`);
     }
 
     await updateChatWithAsstResponse(session.id, testWriteConversation.id, await stream.getFinalResponse());

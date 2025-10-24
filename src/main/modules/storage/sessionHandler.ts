@@ -1,10 +1,12 @@
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile, readdir } from "fs/promises";
 import { join } from 'path';
-import { getSessionStoragePath, ensureStorageDirectory } from "./paths";
 import { v4 } from "uuid";
-import type { Session, Conversation, LLMConfig } from '../../../models/chat';
 
-export const createSession = async (config: LLMConfig): Promise<Session> => {
+import type { Session, SessionInfo, Conversation, LLMConfig } from '../../../models/chat';
+import { defaultLLMConfig } from "../../../models/chat";
+import { getSessionStoragePath, ensureStorageDirectory } from "./paths";
+
+export const createSession = async (config?: LLMConfig): Promise<Session> => {
     try {
         await ensureStorageDirectory();
 
@@ -24,7 +26,7 @@ export const createSession = async (config: LLMConfig): Promise<Session> => {
             conversations: [initialConversation],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            settings: config,
+            settings: config ?? defaultLLMConfig, // Use default if config not provided
         };
 
         await writeSession(newSession);
@@ -144,3 +146,48 @@ export const readConversation = async (sessionId: string, conversationId: string
         throw error;
     }
 }
+
+export const listSessions = async (): Promise<SessionInfo[]> => {
+    try {
+        await ensureStorageDirectory();
+        const sessionStoragePath = getSessionStoragePath();
+        const sessionFiles = await readdir(sessionStoragePath);
+        
+        const sessions = await Promise.all(
+            sessionFiles.filter(file => file.endsWith('.json')).map(async (file) => {
+                const sessionId = file.replace('.json', '');
+                const sessionFilePath = join(sessionStoragePath, file);
+                const sessionData = await readFile(sessionFilePath, { encoding: 'utf8' });
+                const session = JSON.parse(sessionData) as Session;
+                return {
+                    id: sessionId,
+                    createdAt: session.createdAt,
+                    updatedAt: session.updatedAt
+                };
+            })
+        );
+        
+        return sessions;
+    } catch (error) {
+        console.error('Failed to list sessions: ', error);
+        throw error;
+    }
+};
+
+export const getLastActiveSessionId = async (): Promise<string | null> => {
+    try {
+        const sessions = await listSessions();
+        
+        if (sessions.length === 0) {
+            return null;
+        }
+        
+        // Sort sessions by updatedAt in descending order to get the most recent first
+        sessions.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+        
+        return sessions[0].id;
+    } catch (error) {
+        console.error('Failed to get last active session: ', error);
+        throw error;
+    }
+};

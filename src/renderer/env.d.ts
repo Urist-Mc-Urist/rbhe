@@ -1,8 +1,12 @@
-// Declare custom properties on the global Window object
+import { Session, SessionInfo } from "../models/chat";
+
+
 declare global {
   interface Window {
     electronAPI: {
-      getGreeting: (name: string) => Promise<string>;
+      listSessions: () => Promise<SessionInfo[]>;
+      getLastActiveSession: () => Promise<Session>;
+      createNewSession: () => Promise<Session>;
     };
   }
 }
