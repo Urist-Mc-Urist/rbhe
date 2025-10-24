@@ -22,7 +22,7 @@ import type { BamlRuntime, FunctionResult, BamlCtxManager, Image, Audio, Pdf, Vi
 import { toBamlError, BamlAbortError, type HTTPRequest } from "@boundaryml/baml"
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type * as types from "./types"
-import type {Resume} from "./types"
+import type {Message} from "./types"
 import type TypeBuilder from "./type_builder"
 import { HttpRequest, HttpStreamRequest } from "./sync_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -96,10 +96,10 @@ export class BamlSyncClient {
   }
 
   
-  ExtractResume(
-      resume: string,
+  Chat(
+      messages: types.Message[],
       __baml_options__?: BamlCallOptions<never>
-  ): types.Resume {
+  ): string {
     try {
       const options = { ...this.bamlOptions, ...(__baml_options__ || {}) }
       const signal = options.signal;
@@ -119,9 +119,9 @@ export class BamlSyncClient {
         Object.entries(rawEnv).filter(([_, value]) => value !== undefined) as [string, string][]
       );
       const raw = this.runtime.callFunctionSync(
-        "ExtractResume",
+        "Chat",
         {
-          "resume": resume
+          "messages": messages
         },
         this.ctxManager.cloneContext(),
         options.tb?.__tb(),
@@ -132,7 +132,7 @@ export class BamlSyncClient {
         signal,
         options.events,
       )
-      return raw.parsed(false) as types.Resume
+      return raw.parsed(false) as string
     } catch (error: any) {
       throw toBamlError(error);
     }

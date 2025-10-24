@@ -24,7 +24,7 @@ import { toBamlError, BamlStream, BamlAbortError, Collector } from "@boundaryml/
 import type { Checked, Check, RecursivePartialNull as MovedRecursivePartialNull } from "./types"
 import type { partial_types } from "./partial_types"
 import type * as types from "./types"
-import type {Resume} from "./types"
+import type {Message} from "./types"
 import type TypeBuilder from "./type_builder"
 import { AsyncHttpRequest, AsyncHttpStreamRequest } from "./async_request"
 import { LlmResponseParser, LlmStreamParser } from "./parser"
@@ -96,10 +96,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
         }
 
         
-        async ExtractResume(
-        resume: string,
+        async Chat(
+        messages: types.Message[],
         __baml_options__?: BamlCallOptions<never>
-        ): Promise<types.Resume> {
+        ): Promise<string> {
           try {
           const options = { ...this.bamlOptions, ...(__baml_options__ || {}) }
           const signal = options.signal;
@@ -110,8 +110,8 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
 
           // Check if onTick is provided - route through streaming if so
           if (options.onTick) {
-          const stream = this.stream.ExtractResume(
-          resume,
+          const stream = this.stream.Chat(
+          messages,
           __baml_options__
           );
 
@@ -125,9 +125,9 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             Object.entries(rawEnv).filter(([_, value]) => value !== undefined) as [string, string][]
             );
             const raw = await this.runtime.callFunction(
-            "ExtractResume",
+            "Chat",
             {
-            "resume": resume
+            "messages": messages
             },
             this.ctxManager.cloneContext(),
             options.tb?.__tb(),
@@ -138,7 +138,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             signal,
             options.events,
             )
-            return raw.parsed(false) as types.Resume
+            return raw.parsed(false) as string
             } catch (error) {
             throw toBamlError(error);
             }
@@ -158,10 +158,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
             }
 
             
-            ExtractResume(
-            resume: string,
+            Chat(
+            messages: types.Message[],
             __baml_options__?: BamlCallOptions<never>
-            ): BamlStream<partial_types.Resume, types.Resume>
+            ): BamlStream<string, string>
               {
               try {
               const options = { ...this.bamlOptions, ...(__baml_options__ || {}) }
@@ -187,7 +187,7 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
               try {
               options.onTick!("Unknown", log);
               } catch (error) {
-              console.error("Error in onTick callback for ExtractResume", error);
+              console.error("Error in onTick callback for Chat", error);
               }
               }
               };
@@ -198,9 +198,9 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 Object.entries(rawEnv).filter(([_, value]) => value !== undefined) as [string, string][]
                 );
                 const raw = this.runtime.streamFunction(
-                "ExtractResume",
+                "Chat",
                 {
-                "resume": resume
+                "messages": messages
                 },
                 undefined,
                 this.ctxManager.cloneContext(),
@@ -212,10 +212,10 @@ export type RecursivePartialNull<T> = MovedRecursivePartialNull<T>
                 signal,
                 onTickWrapper,
                 )
-                return new BamlStream<partial_types.Resume, types.Resume>(
+                return new BamlStream<string, string>(
                   raw,
-                  (a): partial_types.Resume => a,
-                  (a): types.Resume => a,
+                  (a): string => a,
+                  (a): string => a,
                   this.ctxManager.cloneContext(),
                   options.signal,
                   )

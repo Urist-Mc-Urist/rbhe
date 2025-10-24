@@ -23,7 +23,7 @@ import type { BamlRuntime, BamlCtxManager, ClientRegistry, Image, Audio, Pdf, Vi
 import { toBamlError, HTTPRequest } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type * as types from "./types"
-import type {Resume} from "./types"
+import type {Message} from "./types"
 import type TypeBuilder from "./type_builder"
 import type * as events from "./events"
 
@@ -41,8 +41,8 @@ env?: Record<string, string | undefined>
   constructor(private runtime: BamlRuntime, private ctxManager: BamlCtxManager) {}
 
   
-  async ExtractResume(
-  resume: string,
+  async Chat(
+  messages: types.Message[],
   __baml_options__?: BamlCallOptions<never>
   ): Promise<HTTPRequest> {
     try {
@@ -51,9 +51,9 @@ env?: Record<string, string | undefined>
       Object.entries(rawEnv).filter(([_, value]) => value !== undefined) as [string, string][]
       );
       return await this.runtime.buildRequest(
-      "ExtractResume",
+      "Chat",
       {
-      "resume": resume
+      "messages": messages
       },
       this.ctxManager.cloneContext(),
       __baml_options__?.tb?.__tb(),
@@ -72,8 +72,8 @@ env?: Record<string, string | undefined>
       constructor(private runtime: BamlRuntime, private ctxManager: BamlCtxManager) {}
 
       
-      async ExtractResume(
-      resume: string,
+      async Chat(
+      messages: types.Message[],
       __baml_options__?: BamlCallOptions<never>
       ): Promise<HTTPRequest> {
         try {
@@ -82,9 +82,9 @@ env?: Record<string, string | undefined>
           Object.entries(rawEnv).filter(([_, value]) => value !== undefined) as [string, string][]
           );
           return await this.runtime.buildRequest(
-          "ExtractResume",
+          "Chat",
           {
-          "resume": resume
+          "messages": messages
           },
           this.ctxManager.cloneContext(),
           __baml_options__?.tb?.__tb(),

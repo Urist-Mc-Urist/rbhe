@@ -27,14 +27,14 @@ export { FieldType, EnumBuilder, ClassBuilder }
 export default class TypeBuilder {
     private tb: _TypeBuilder;
     
-    Resume: ClassViewer<'Resume', "name" | "email" | "experience" | "skills">;
+    Message: ClassViewer<'Message', "role" | "content">;
     
     
 
     constructor() {
         this.tb = new _TypeBuilder({
           classes: new Set([
-            "Resume",
+            "Message",
           ]),
           enums: new Set([
             
@@ -42,8 +42,8 @@ export default class TypeBuilder {
           runtime: DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME
         });
         
-        this.Resume = this.tb.classViewer("Resume", [
-          "name","email","experience","skills",
+        this.Message = this.tb.classViewer("Message", [
+          "role","content",
         ]);
         
         

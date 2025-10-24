@@ -1,6 +1,6 @@
-import { readFile, writeFile, mkdir, access, readdir } from "fs/promises";
+import { readFile, writeFile } from "fs/promises";
 import { join } from 'path';
-import { getSessionStoragePath } from "./paths";
+import { getSessionStoragePath, ensureStorageDirectory } from "./paths";
 import { v4 } from "uuid";
 import type { Session, Conversation, LLMConfig } from '../../../models/chat';
 
@@ -142,15 +142,5 @@ export const readConversation = async (sessionId: string, conversationId: string
     } catch (error) {
         console.error(`Failed to read conversation ${conversationId} from session ${sessionId}: `, error);
         throw error;
-    }
-}
-
-export const ensureStorageDirectory = async(): Promise<void> => {
-    const storagePath = getSessionStoragePath();
-    try {
-        await access(storagePath);
-    } catch {
-        console.error("StoragePath couldn't be accessed")
-        await mkdir(storagePath, {recursive: true})
     }
 }

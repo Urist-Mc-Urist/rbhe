@@ -47,10 +47,8 @@ export function all_succeeded<CheckName extends string>(checks: Record<CheckName
 export function get_checks<CheckName extends string>(checks: Record<CheckName, Check>): Check[] {
     return Object.values(checks)
 }
-export interface Resume {
-  name: string
-  email: string
-  experience: string[]
-  skills: string[]
+export interface Message {
+  role: "user" | "assistant" | "system"
+  content: string
   
 }

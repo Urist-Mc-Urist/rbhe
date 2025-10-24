@@ -22,7 +22,7 @@ import type { BamlRuntime, BamlCtxManager, ClientRegistry, Image, Audio, Pdf, Vi
 import { toBamlError, HTTPRequest } from "@boundaryml/baml"
 import type { Checked, Check } from "./types"
 import type * as types from "./types"
-import type {Resume} from "./types"
+import type {Message} from "./types"
 import type TypeBuilder from "./type_builder"
 import type * as events from "./events"
 
@@ -37,8 +37,8 @@ export class HttpRequest {
   constructor(private runtime: BamlRuntime, private ctxManager: BamlCtxManager) {}
 
   
-  ExtractResume(
-      resume: string,
+  Chat(
+      messages: types.Message[],
       __baml_options__?: BamlCallOptions<never>
   ): HTTPRequest {
     try {
@@ -47,9 +47,9 @@ export class HttpRequest {
         Object.entries(rawEnv).filter(([_, value]) => value !== undefined) as [string, string][]
       );
       return this.runtime.buildRequestSync(
-        "ExtractResume",
+        "Chat",
         {
-          "resume": resume
+          "messages": messages
         },
         this.ctxManager.cloneContext(),
         __baml_options__?.tb?.__tb(),
@@ -68,8 +68,8 @@ export class HttpStreamRequest {
   constructor(private runtime: BamlRuntime, private ctxManager: BamlCtxManager) {}
 
   
-  ExtractResume(
-      resume: string,
+  Chat(
+      messages: types.Message[],
       __baml_options__?: BamlCallOptions<never>
   ): HTTPRequest {
     try {
@@ -78,9 +78,9 @@ export class HttpStreamRequest {
         Object.entries(rawEnv).filter(([_, value]) => value !== undefined) as [string, string][]
       );
       return this.runtime.buildRequestSync(
-        "ExtractResume",
+        "Chat",
         {
-          "resume": resume
+          "messages": messages
         },
         this.ctxManager.cloneContext(),
         __baml_options__?.tb?.__tb(),
