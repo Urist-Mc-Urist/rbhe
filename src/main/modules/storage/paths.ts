@@ -5,6 +5,6 @@ export const getUserDataPath = (): string => {
     return app.getPath('userData');
 }
 
-export const getConversationStoragePath = (): string => {
-    return join(getUserDataPath(), 'conversations');
+export const getSessionStoragePath = (): string => {
+    return join(getUserDataPath(), 'ChatSessions');
 }

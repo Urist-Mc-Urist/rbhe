@@ -1,10 +1,18 @@
+export interface Session {
+    id: string,
+    activeConversationId: string;
+    conversations: Conversation[]
+    createdAt: string,
+    updatedAt: string,
+    settings: LLMConfig
+}
+
 export interface Conversation {
     id: string;
     title: string;
     createdAt: string;
     updatedAt: string;
     messages: Message[];
-    settings: LLMConfig
 }
 
 export interface Message {
@@ -13,6 +21,12 @@ export interface Message {
     content: string;
     timestamp: string;
     metadata?: Metadata;
+}
+
+export const defaultLLMConfig: LLMConfig = {
+    temperature: 0.7,
+    maxTokens: 4096,
+    top_p: 0.9
 }
 
 export interface LLMConfig {
