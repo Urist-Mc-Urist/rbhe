@@ -1,5 +1,8 @@
 import { contextBridge, ipcRenderer } from "electron";
+import { createSession } from "./main/modules/storage/sessionHandler";
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    getGreeting: (name: string) => ipcRenderer.invoke('get-greeting', name),
+    listSessions: () => ipcRenderer.invoke('listSessions'),
+    getLastActiveSession: () => ipcRenderer.invoke('getLastActive'),
+    createNewSession: () => ipcRenderer.invoke('createSession')
 });

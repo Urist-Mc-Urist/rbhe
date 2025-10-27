@@ -1,10 +1,10 @@
-import { Session, SessionInfo } from "../models/chat";
+import { Session } from "../models/chat";
 
 
 declare global {
   interface Window {
     electronAPI: {
-      listSessions: () => Promise<SessionInfo[]>;
+      listSessions: () => Promise<Session[]>;
       getLastActiveSession: () => Promise<Session>;
       createNewSession: () => Promise<Session>;
     };

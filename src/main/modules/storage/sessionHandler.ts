@@ -2,7 +2,7 @@ import { readFile, writeFile, readdir } from "fs/promises";
 import { join } from 'path';
 import { v4 } from "uuid";
 
-import type { Session, SessionInfo, Conversation, LLMConfig } from '../../../models/chat';
+import type { Session, Conversation, LLMConfig } from '../../../models/chat';
 import { defaultLLMConfig } from "../../../models/chat";
 import { getSessionStoragePath, ensureStorageDirectory } from "./paths";
 
@@ -147,7 +147,7 @@ export const readConversation = async (sessionId: string, conversationId: string
     }
 }
 
-export const listSessions = async (): Promise<SessionInfo[]> => {
+export const listSessions = async (): Promise<Session[]> => {
     try {
         await ensureStorageDirectory();
         const sessionStoragePath = getSessionStoragePath();
@@ -155,15 +155,9 @@ export const listSessions = async (): Promise<SessionInfo[]> => {
         
         const sessions = await Promise.all(
             sessionFiles.filter(file => file.endsWith('.json')).map(async (file) => {
-                const sessionId = file.replace('.json', '');
                 const sessionFilePath = join(sessionStoragePath, file);
                 const sessionData = await readFile(sessionFilePath, { encoding: 'utf8' });
-                const session = JSON.parse(sessionData) as Session;
-                return {
-                    id: sessionId,
-                    createdAt: session.createdAt,
-                    updatedAt: session.updatedAt
-                };
+                return JSON.parse(sessionData) as Session;
             })
         );
         
@@ -174,7 +168,7 @@ export const listSessions = async (): Promise<SessionInfo[]> => {
     }
 };
 
-export const getLastActiveSessionId = async (): Promise<string | null> => {
+export const getLastActiveSession = async (): Promise<Session | null> => {
     try {
         const sessions = await listSessions();
         
@@ -185,7 +179,7 @@ export const getLastActiveSessionId = async (): Promise<string | null> => {
         // Sort sessions by updatedAt in descending order to get the most recent first
         sessions.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
         
-        return sessions[0].id;
+        return sessions[0];
     } catch (error) {
         console.error('Failed to get last active session: ', error);
         throw error;

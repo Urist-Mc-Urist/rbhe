@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Session, SessionInfo } from '../models/chat';
+import { Session } from '../models/chat';
 
 const App = () => {
-  const [sessions, setSessions] = React.useState<SessionInfo[]>([]);
+  const [sessions, setSessions] = React.useState<Session[]>([]);
   const [activeSession, setActiveSession] = React.useState<Session | null>(null);
   const [newSession, setNewSession] = React.useState<Session | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -31,7 +31,13 @@ const App = () => {
     setError(null);
     try {
       const result = await window.electronAPI.getLastActiveSession();
-      setActiveSession(result);
+      if(result) {
+        setActiveSession(result);
+      }
+      else {
+        console.log("result is null:");
+        console.log(result);
+      }
       console.log('Last active session:', result);
     } catch (err) {
       setError(`Error getting last active session: ${(err as Error).message}`);
