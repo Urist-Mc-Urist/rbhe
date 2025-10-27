@@ -60,14 +60,10 @@ export const readSession = async (id: string): Promise<Session> => {
     }
 };
 
-export const listConversations = async (sessionId: string): Promise<{ id: string; title: string; createdAt: string }[]> => {
+export const listConversations = async (sessionId: string): Promise<Conversation[]> => {
     try {
         const session = await readSession(sessionId);
-        return session.conversations.map(conversation => ({
-            id: conversation.id,
-            title: conversation.title,
-            createdAt: conversation.createdAt,
-        }));
+        return session.conversations;
     } catch (error) {
         console.error(`Failed to list conversations for session ${sessionId}: `, error);
         throw error;
@@ -114,19 +110,19 @@ export const createConversation = async (sessionId: string): Promise<Conversatio
 }
 
 export const writeConversation = async (sessionId: string, conversation: Conversation): Promise<Session> => {
-  await ensureStorageDirectory();
-  const session = await readSession(sessionId);
-  
-  const index = session.conversations.findIndex(c => c.id === conversation.id);
-  if (index !== -1) session.conversations[index] = conversation;
-  else {
-    session.conversations.push(conversation);
-    session.activeConversationId = conversation.id;
-  }
-  
-  session.updatedAt = new Date().toISOString();
-  await writeSession(session);
-  return session;
+    await ensureStorageDirectory();
+    const session = await readSession(sessionId);
+
+    const index = session.conversations.findIndex(c => c.id === conversation.id);
+    if (index !== -1) session.conversations[index] = conversation;
+    else {
+        session.conversations.push(conversation);
+        session.activeConversationId = conversation.id;
+    }
+
+    session.updatedAt = new Date().toISOString();
+    await writeSession(session);
+    return session; // Critical: Return updated session for frontend
 };
 
 export const readConversation = async (sessionId: string, conversationId: string): Promise<Conversation> => {
