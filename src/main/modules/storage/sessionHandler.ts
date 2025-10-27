@@ -74,6 +74,18 @@ export const listConversations = async (sessionId: string): Promise<{ id: string
     }
 };
 
+export const setActiveConversation = async (sessionId: string, conversationId: string): Promise<Session> => {
+  await ensureStorageDirectory();
+  const session = await readSession(sessionId);
+  const conversationExists = session.conversations.some(c => c.id === conversationId);
+  if (!conversationExists) throw new Error(`Conversation ${conversationId} not found`);
+  
+  session.activeConversationId = conversationId;
+  session.updatedAt = new Date().toISOString();
+  await writeSession(session);
+  return session; // Return updated session for frontend state sync
+};
+
 export const createConversation = async (sessionId: string): Promise<Conversation> => {
     try {
         await ensureStorageDirectory();
@@ -101,30 +113,21 @@ export const createConversation = async (sessionId: string): Promise<Conversatio
     }
 }
 
-export const writeConversation = async (sessionId: string, conversation: Conversation): Promise<void> => {
-    try {
-        await ensureStorageDirectory();
-        
-        // Update the specific session that owns this conversation
-        const session = await readSession(sessionId);
-        
-        const conversationIndex = session.conversations.findIndex(c => c.id === conversation.id);
-        if (conversationIndex !== -1) {
-            session.conversations[conversationIndex] = conversation;
-            session.updatedAt = new Date().toISOString();
-            await writeSession(session);
-        } else {
-            // If conversation not found in session, add it (for backward compatibility)
-            session.conversations.push(conversation);
-            session.activeConversationId = conversation.id;
-            session.updatedAt = new Date().toISOString();
-            await writeSession(session);
-        }
-    } catch (error) {
-        console.error(`Failed to write conversation: ${conversation.id} in session: ${sessionId}`, error);
-        throw error;
-    }
-}
+export const writeConversation = async (sessionId: string, conversation: Conversation): Promise<Session> => {
+  await ensureStorageDirectory();
+  const session = await readSession(sessionId);
+  
+  const index = session.conversations.findIndex(c => c.id === conversation.id);
+  if (index !== -1) session.conversations[index] = conversation;
+  else {
+    session.conversations.push(conversation);
+    session.activeConversationId = conversation.id;
+  }
+  
+  session.updatedAt = new Date().toISOString();
+  await writeSession(session);
+  return session;
+};
 
 export const readConversation = async (sessionId: string, conversationId: string): Promise<Conversation> => {
     try {

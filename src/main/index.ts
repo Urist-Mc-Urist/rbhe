@@ -32,9 +32,9 @@ const createWindow = (): void => {
 };
 
 app.whenReady().then(async () => {
-  ipcMain.handle('listSessions', handleListSessions);
-  ipcMain.handle('getLastActive', handleGetLastActiveSession);
-  ipcMain.handle('createSession', handleCreateSession);
+  ipcMain.handle('session:list', handleListSessions);
+  ipcMain.handle('session:getActive', handleGetLastActiveSession);
+  ipcMain.handle('session:create', handleCreateSession);
 
   createWindow();
 

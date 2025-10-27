@@ -144,7 +144,7 @@ const App = () => {
                 {sessions.map(session => (
                   <li key={session.id} style={{ 
                     padding: '8px', 
-                    backgroundColor: '#f5f5f5', 
+                    backgroundColor: '#323c3dff', 
                     marginBottom: '5px',
                     borderRadius: '4px'
                   }}>
@@ -164,7 +164,7 @@ const App = () => {
             ) : (
               <div style={{ 
                 padding: '10px', 
-                backgroundColor: '#e3f2fd', 
+                backgroundColor: '#323c3dff', 
                 borderRadius: '4px'
               }}>
                 <strong>ID:</strong> {activeSession.id}<br />
@@ -184,7 +184,7 @@ const App = () => {
             ) : (
               <div style={{ 
                 padding: '10px', 
-                backgroundColor: '#e8f5e8', 
+                backgroundColor: '#323c3dff', 
                 borderRadius: '4px'
               }}>
                 <strong>ID:</strong> {newSession.id}<br />
