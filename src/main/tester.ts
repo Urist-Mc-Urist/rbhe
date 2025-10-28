@@ -1,6 +1,6 @@
 import { createSession, writeConversation, readConversation } from "./modules/storage/sessionService";
 import { Conversation } from "../models/chat";
-import { getChatStream, updateChatWithAsstResponse } from './modules/llm/llmService'
+import { getStreamFromUserMessage } from "./modules/llm/llmService";
 
 export const runTests = async (): Promise<void> => {
     console.log("Starting tests");
@@ -35,26 +35,15 @@ export const runTests = async (): Promise<void> => {
             "content": "Hello, how can I help you?",
             "timestamp": "Now"
         },
-        {
-            "id": "3",
-            "role": "user",
-            "content": "How far away is the moon?",
-            "timestamp": "Now"
-        },
     ]}
 
     await writeConversation(session.id, testWriteConversation);
 
-    console.log("Result from conversation read:");
-    console.log(JSON.stringify(await readConversation(session.id, testWriteConversation.id), null, 2));
-
-    const stream = await getChatStream(session.id, testWriteConversation.id);
-    console.log();
-    for await (const partial of stream) {
+    const res = await getStreamFromUserMessage(session.id, testWriteConversation.id, "How far away is the moon?");;
+    for await (const partial of res.stream) {
         process.stdout.write(`${partial}\r`);
     }
-
-    await updateChatWithAsstResponse(session.id, testWriteConversation.id, await stream.getFinalResponse());
+    await res.completeWithAssistantResponse(await res.stream.getFinalResponse())
 
     console.log("tests completed");
 }
