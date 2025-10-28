@@ -1,6 +1,6 @@
-import { createSession, writeConversation, readConversation } from "./modules/storage/sessionHandler";
+import { createSession, writeConversation, readConversation } from "./modules/storage/sessionService";
 import { Conversation } from "../models/chat";
-import { getChatStream, updateChatWithAsstResponse } from './modules/llm/llmHandler'
+import { getChatStream, updateChatWithAsstResponse } from './modules/llm/llmService'
 
 export const runTests = async (): Promise<void> => {
     console.log("Starting tests");

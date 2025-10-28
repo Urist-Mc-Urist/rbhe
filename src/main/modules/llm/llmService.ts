@@ -1,7 +1,7 @@
 import { BamlStream } from '@boundaryml/baml'
 import { b } from '../../../baml_client'
 import { v4 } from 'uuid'
-import { writeConversation, readConversation } from '../storage/sessionHandler'
+import { writeConversation, readConversation } from '../storage/sessionService'
 
 export const getChatStream = async (sessionId: string, conversationId: string): Promise<BamlStream<string, string>> => {
     const messages = (await readConversation(sessionId, conversationId)).messages
